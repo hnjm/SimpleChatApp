@@ -22,11 +22,5 @@ namespace SignalR.Client.Controllers
         {
             return View();
         }
-
-        public ActionResult Create()
-        {
-            return View();
-        }
-       
     }
 }

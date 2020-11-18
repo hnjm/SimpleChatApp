@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+     
+        <div class="row">
+            <div class="col">
+                <strong>Dikkat</strong> <span class="alert alert-danger form-control"><strong id="messageStatus"></strong></span>
+            </div>
+            <div class="col">
+                <strong>Bağlantı</strong> <span class="alert alert-info form-control"><strong id="connectionStatus"></strong></span>
+            </div>
+            <div class="col">
+                <strong>Mesaj</strong>:<input type="text" class="form-control" id="message" value="" />
+            </div>
+            <div class="col">
+                <button type="button" style="margin-top:22px" id="btnSendMessage" class="btn btn-success form-control">Gönder</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="messages">
+
+            </div>
+        </div>
+     
+@section Scripts{
+    <script src="~/lib/@@microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script type="text/javascript">
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44394/MessageHub").build();
+        $("#connectionStatus").text(connection.connectionState);
+        connection.start().then(function () {
+            $("#connectionStatus").text(connection.connectionState);
+        }).catch(function (error) { console.log(error) });
+        $("#btnSendMessage").click(function () {
+            var message = $("#message").val();
+            if (message != null && message != undefined && message != "") {
+                connection.invoke("SendMessage", message);
+                $("#message").val('');
+            }
+            else {
+                $("#messageStatus").text("Mesaj kısmını doldurunuz!");
+            }
+        });
+        connection.on("ReceiveMessage", function (message) {
+            var html = "<span class='alert alert-success'>" + message + "</span><br/><br/><br/>";
+            $("#messages").append(html);
+        });
+    </script>
+}
